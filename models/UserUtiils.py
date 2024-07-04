@@ -8,6 +8,15 @@ from __init__ import mail
 
 
 def save_picture(form_picture):
+    """
+    Saves a picture uploaded in the form as a profile picture.
+
+    Args:
+    form_picture: The picture file uploaded through a form.
+
+    Returns:
+    The filename of the saved picture.
+    """
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
@@ -22,6 +31,19 @@ def save_picture(form_picture):
 
 
 def send_reset_email(user):
+    """
+    Sends a password reset email to the specified user.
+
+    Args:
+    user (User): The user object for whom the password reset email is being sent.
+
+    Returns:
+    None
+
+    This function generates a password reset token for the user, creates a message object with the token and the user's email,
+    and sends the message using the Flask-Mail extension. The email contains a link to reset the password, which is generated
+    using the `url_for` function. If the user did not request the password reset, the email can be ignored and no changes will be made.
+    """
     token = user.get_reset_token()
     msg = Message('Password Reset Request',
                   sender='noreply@demo.com',
