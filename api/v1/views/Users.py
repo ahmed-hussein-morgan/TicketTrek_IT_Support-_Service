@@ -11,12 +11,18 @@ users = Blueprint('users', __name__)
 
 @users.route("/register", methods=['GET', 'POST'])
 def register():
+    """
+    Route for user registration.
+    If the user is already authenticated, redirects to the home page.
+    If the registration form is valid, creates a new user with hashed password and adds it to the database.
+    If successful, flashes a success message and redirects to the login page.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User(username=form.username.data, email=form.email.data, role=form.role.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
@@ -26,6 +32,19 @@ def register():
 
 @users.route("/login", methods=['GET', 'POST'])
 def login():
+    """
+    Route for user login handling.
+    If the user is authenticated, redirects to the home page.
+    Validates the login form; if successful, logs the user in.
+    If login is successful, redirects to the next page or the home page.
+    If login fails, displays an error message.
+
+    Parameters:
+    None
+
+    Returns:
+    render_template: Renders the login.html template with the login form.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = LoginForm()
@@ -49,6 +68,12 @@ def logout():
 @users.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
+    """
+    Route for the user account page. Handles form submission to update account details.
+    If form validation is successful, updates the user's account information and displays a success message.
+    If the request method is 'GET', populates the form with the current user's information.
+    Returns the account.html template with the account details and form.
+    """
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
@@ -69,6 +94,15 @@ def account():
 
 @users.route("/user/<string:username>")
 def user_tickets(username):
+    """
+    Route for displaying the tickets of a specific user.
+
+    Parameters:
+    username (str): The username of the user whose tickets are to be displayed.
+
+    Returns:
+    flask.Response: The rendered template 'user_Tickets.html' with the tickets and user information.
+    """
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
     Tickets = Ticket.query.filter_by(author=user)\
@@ -79,6 +113,15 @@ def user_tickets(username):
 
 @users.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
+    """
+    Route for resetting the user password using a token.
+
+    Parameters:
+    None
+
+    Returns:
+    render_template: Renders the reset_request.html with the title 'Reset Password' and the form data.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RequestResetForm()
@@ -92,6 +135,15 @@ def reset_request():
 
 @users.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
+    """
+    Route for resetting the user password using a token.
+
+    Parameters:
+    token (str): The token used for resetting the password.
+
+    Returns:
+    render_template: Renders the reset_token.html with the title 'Reset Password' and the form data.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     user = User.verify_reset_token(token)
