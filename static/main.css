@@ -20,6 +20,7 @@ body{
     padding: 0;
     background-color: #F2F2F2;
     color: #333;
+
 }
 
 footer{
@@ -72,5 +73,6 @@ a {
 }
 a:hover {
     /* color: #FFD700; */
-    color: #F4CE14;
+    /* color: #F4CE14; */
+    color: #ffc107;
 }
