@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form method="POST">
+
+    {{ form.hidden_tag() }}
+    <fieldset>
+        <legend>Log IN</legend>
+        <div>
+            {{ form.username.label }}
+
+            {% if form.username.errors %}
+
+                {% for error in form.username.errors %}
+
+                    <span>{{ error }}</span>
+
+                {% endfor %}
+
+            {% else %}
+                {{ form.username }}
+            {%endif%}
+
+        </div>
+
+        <div>
+            {{ form.password.label }}
+            {% if form.password.errors %}
+
+                {% for error in form.password.errors %}
+
+                    <span>{{ error }}</span>
+
+                {% endfor %}
+
+            {% else %}
+                {{ form.password }}
+            {%endif%}
+        </div>
+        <div>
+            {{ form.remember }}
+            {{ form.remember.label }}
+        </div>
+    </fieldset>
+        <div>
+            {{ form.submit }}
+        </div>
+        <small>
+            <a href="#"> Forgot Password </a>
+        </small>
+</form>
+<div>
+    <small>
+        Need an account? <a href="{{ url_for('register') }}"> Sign Up </a>
+    </small>
+</div>
+
+
+
+{% endblock content %}
