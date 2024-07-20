@@ -23,15 +23,16 @@ import os
 
 
 app = Flask(__name__)
+
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
-app.config['MYSQL_HOST'] = os.environ.get('HOST')
-app.config['MYSQL_USER'] = os.environ.get('USER')
-app.config['MYSQL_PASSWORD'] = os.environ.get('PASSWORD')
-app.config['MYSQL_DB'] = os.environ.get('DB')
+# app.config['MYSQL_HOST'] = os.environ.get('HOST')
+app.config['MYSQL_USER'] = os.environ.get('DBUSER')
+app.config['MYSQL_PASSWORD'] = os.environ.get('DBPASSWORD')
+app.config['MYSQL_DB'] = os.environ.get('SIMPLEDB')
 
 # configure the Database
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}@{app.config['MYSQL_HOST']}/{app.config['MYSQL_DB']}"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}@localhost/{app.config['MYSQL_DB']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Another way to configure the database by using .forma() insteaf of the python f-string is below:
@@ -57,6 +58,10 @@ class TicketStatus(Enum):
     RECEIVED = "received"
     SOLVED = "solved"
 
+class TicketType(Enum):
+    REQUEST = "request"
+    COMPLAIN = "complain"
+
 
 class Role(db.Model):
     __tablename__ = "roles"
@@ -81,6 +86,7 @@ class User(db.Model):
 class Ticket(db.Model):
     __tablename__ = "tickets"
     ticket_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    ticket_type = db.Column(db.Enum(TicketType), nullable=False)
     # ticket_category = db.Column(db.String(64), nullable=False) could be changed on productuon to be "enum" with limited category list
     ticket_category = db.Column(db.String(30), nullable=False)
     ticket_title = db.Column(db.String(64), nullable=False)
@@ -103,7 +109,7 @@ class Ticket(db.Model):
 class IT(db.Model):
     __tablename__ = "it_tickets"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    ticket_id = db.Column(db.Integer, db.ForeignKey('tickets.id'), nullable=False)
+    ticket_id = db.Column(db.Integer, db.ForeignKey('tickets.ticket_id'), nullable=False)
     tech_name = db.Column(db.String(30), nullable=True)
     update_date = db.Column(db.Date, nullable=False, default=func.now().cast(db.Date))
     # update_time = db.Column(db.Time, nullable=False, default=func.now().time())
@@ -113,7 +119,7 @@ class UserTicket(db.Model):
     __tablename__ = "employee_ticket"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
-    ticket_id = db.Column(db.Integer, db.ForeignKey('tickets.id'), nullable=False)
+    ticket_id = db.Column(db.Integer, db.ForeignKey('tickets.ticket_id'), nullable=False)
     
 
 
