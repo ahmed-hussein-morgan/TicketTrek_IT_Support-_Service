@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <!-- adding JQuery CDN  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- <title>Ticket Trek</title> -->
+
+     {% if title %}
+            <title> {{ title }} </title>
+     {% else %}
+            <title>No title passed</title>
+     {% endif %}
+</head>
+<body>
+        <!-- set alerting message:
+           the get_flashed_messages() is a flask method to get the flash message passed to the template from the view
+           with_categories=true ==> return a tuple of 2 items 
+               first item in this tuple -> is the category passed to the flash() method in the view
+               second item in this tuple -> is the flash message itself wrote in the flash method -->
+        <div>
+            {% for message in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-{{ message[0] }}">
+                {{ message[1] }}
+            </div>
+            {%endfor%}
+        </div>
+
+        {% block content %}
+       
+        
+        {% endblock content %}
+
+    <!-- </body>
+    <footer>
+        <p>this is the base-footer</p>
+    </footer> -->
+</body>
+</html>
