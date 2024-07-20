@@ -63,6 +63,14 @@ class TicketType(Enum):
     COMPLAIN = "complain"
 
 
+class Requests(Enum):
+    MOUSE = "new_mouse"
+    KEYBOARD = "new_keyboard"
+    CHARGER = "new_charger"
+    CARTIDGE = "new_or_refill_cartidge"
+    PC ="new_pc"
+
+
 class Role(db.Model):
     __tablename__ = "roles"
     id = db.Column(db.Integer, primary_key=True, unique=True)
@@ -88,9 +96,10 @@ class Ticket(db.Model):
     ticket_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
     ticket_type = db.Column(db.Enum(TicketType), nullable=False)
     # ticket_category = db.Column(db.String(64), nullable=False) could be changed on productuon to be "enum" with limited category list
-    ticket_category = db.Column(db.String(30), nullable=False)
-    ticket_title = db.Column(db.String(64), nullable=False)
-    ticket_details = db.Column(db.Text, nullable=False)
+    ticket_requests = db.Column(db.Enum(Requests), nullable=True)
+    #ticket_category = db.Column(db.String(30), nullable=False)
+    ticket_title = db.Column(db.String(64), nullable=True)
+    ticket_details = db.Column(db.Text, nullable=True)
 
     # Adding a column to add attached files like photos or screenshots (Canceled)because:
     #       it either need an additional cost to store these files on a cloud 
